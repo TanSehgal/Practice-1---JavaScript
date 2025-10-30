@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Character Counter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            line-height: 1.5;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .counter-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .counter-info {
+            display: flex;
+            gap: 30px;
+        }
+
+        .counter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .counter-label {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .counter-value {
+            color: #667eea;
+            font-size: 24px;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+
+        .counter-value.updated {
+            transform: scale(1.2);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .clear-btn {
+            margin-top: 15px;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            width: 100%;
+        }
+
+        .clear-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .clear-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            .counter-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .counter-info {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Live Character Counter</h1>
+        <p class="subtitle">Type something and watch the counter update in real-time!</p>
+        
+        <div class="textarea-wrapper">
+            <textarea id="textInput" placeholder="Start typing here..."></textarea>
+        </div>
+
+        <div class="counter-container">
+            <div class="counter-info">
+                <div class="counter-item">
+                    <span class="counter-label">Characters</span>
+                    <span class="counter-value" id="charCount">0</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-label">Words</span>
+                    <span class="counter-value" id="wordCount">0</span>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span>Live</span>
+            </div>
+        </div>
+
+        <button class="clear-btn" id="clearBtn">Clear Text</button>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const textInput = document.getElementById('textInput');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // Function to update counters
+        function updateCounters() {
+            const text = textInput.value;
+            
+            // Update character count
+            const characters = text.length;
+            charCount.textContent = characters;
+            
+            // Update word count
+            const words = text.trim().length === 0 ? 0 : text.trim().split(/\s+/).length;
+            wordCount.textContent = words;
+            
+            // Add animation effect
+            charCount.classList.add('updated');
+            wordCount.classList.add('updated');
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+                charCount.classList.remove('updated');
+                wordCount.classList.remove('updated');
+            }, 200);
+        }
+
+        // Event listener for input event (fires on every change)
+        textInput.addEventListener('input', updateCounters);
+
+        // Event listener for clear button
+        clearBtn.addEventListener('click', () => {
+            textInput.value = '';
+            updateCounters();
+            textInput.focus();
+        });
+
+        // Initialize counters on page load
+        updateCounters();
+    </script>
+</body>
+</html>
